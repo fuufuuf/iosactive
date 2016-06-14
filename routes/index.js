@@ -9,21 +9,14 @@ mongo_api.db_conn(function(getDB){//for pv
 
 router.get('/iosactive', function(req, res, next){
 
-    if(req.query.active_type==strong) {
+    req.query.active_date = new Date();
+
+    if(req.query.active_type=='strong') {
 
 
-        var doc = {}
+        req.query.ys_uuid = req.cookies.ys_uuid;
 
-        for (i in req.query) {
-            doc[i] = req.query[i];
-
-        }
-        for (i in req.cookies) {
-            doc[i] = req.cookies[i];
-
-        }
-
-        mongo_api.insertDocuments(db, 'iosactive', doc, function (err, r) {
+        mongo_api.insertDocuments(db, 'iosactive', req.query, function (err, r) {
 
             if (err) {
 
@@ -34,20 +27,22 @@ router.get('/iosactive', function(req, res, next){
             }
 
         })
-    }else if(req.query.active_type==weak){
+    }else if(req.query.active_type=='weak'){
 
         var appid = req.query.appid;
         var ip = req.ips[0];
-        var doc_inner = {'app_id':appid, 'sip':ip};
+        var doc_inner = {'app_id':appid, 'sip':ip||null};
         var doc = {'all_info':{$elemMatch:doc_inner}};
+        console.log(doc);
         var collection = db.collection('yushan_user');
         collection.find(doc).toArray(function(err, docs){
                 if(docs.length==0){
                     res.send('no match');
                 }else{
+                    console.log(docs);
                     var alt_ys_uuid = [];
-                    req.query.ys_uuid=docs[0].ys_uuid;//make first match as ys_uuid
-                    for(var item in docs.shift()){
+                    req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
+                    for(var item in docs){
                         alt_ys_uuid.push(item.ys_uuid);
                     }
 
@@ -57,6 +52,7 @@ router.get('/iosactive', function(req, res, next){
                         if(err){
                             console.log(err);
                         }
+                        res.send('matched')
                     })
 
                 }

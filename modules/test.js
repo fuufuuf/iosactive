@@ -1,5 +1,7 @@
-var k = [0]
-for(i in k.shift()){
+var k = [{abc:'qqq'},1];
+console.log(k.shift().abc);
 
-    console.log(i.q);
+for(i in k){
+
+    console.log(k[i]);
 };

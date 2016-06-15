@@ -11,8 +11,8 @@ router.get('/iosactive', function(req, res, next){
 
 
     req.query.active_date = new Date();
-    console.log('cookie'+req.cookies);
-    console.log('req'+req.query);
+    console.log(req.cookies);
+    console.log(req.query);
 
     if(req.query.active_type=='strong') {
 
@@ -25,6 +25,9 @@ router.get('/iosactive', function(req, res, next){
 
                 res.send('not saved due to ' + err);
             } else {
+
+                console.log(req.query);
+                console.log('succeeded');
 
                 res.send('succeeded');
             }

@@ -10,7 +10,8 @@ mongo_api.db_conn(function(getDB){//for pv
 router.get('/iosactive', function(req, res, next){
 
     req.query.active_date = new Date();
-    console.log(req.cookies);
+    console.log('cookie'+req.cookies);
+    console.log('req'+req.query);
 
     if(req.query.active_type=='strong') {
 

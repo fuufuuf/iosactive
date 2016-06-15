@@ -9,6 +9,7 @@ mongo_api.db_conn(function(getDB){//for pv
 
 router.get('/iosactive', function(req, res, next){
 
+
     req.query.active_date = new Date();
     console.log(req.cookies);
 
@@ -60,7 +61,12 @@ router.get('/iosactive', function(req, res, next){
 
             })
 
-        }
+        }else{
+
+        res.cookie('yssss_uuid', req.qurery.k, { maxAge: 600000*6*24*365, path:'/', domain:'.yushanapp.com'});//record uid for ios active
+        res.end('works');
+
+    }
 
 
 })

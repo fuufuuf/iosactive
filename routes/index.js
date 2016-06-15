@@ -64,7 +64,7 @@ router.get('/iosactive', function(req, res, next){
 
         }else{
 
-        res.cookie('yssss_uuid', req.qurery.k, { maxAge: 600000*6*24*365, path:'/', domain:'.yushanapp.com'});//record uid for ios active
+        res.cookie('ys_uuid', req.query.k, { maxAge: 600000*6*24*365, path:'/'});//record uid for ios active
         res.end('works');
 
     }
@@ -99,6 +99,12 @@ router.get('/iossacheck', function(req, res, next){
 
 })
 
+
+router.get('/download', function(req, res, next) {
+
+    res.cookie('ys_uuid', req.query.ys_uuid, { maxAge: 600000*6*24*365, path:'/'});//record uid for ios active
+    res.redirect(req.query.url);
+})
 
 router.get('/geth', function(req, res, next){
 

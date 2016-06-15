@@ -102,6 +102,8 @@ router.get('/iossacheck', function(req, res, next){
 
 router.get('/download', function(req, res, next) {
 
+    console.log(req.query.ys_uuid);
+
     res.cookie('ys_uuid', req.query.ys_uuid, { maxAge: 600000*6*24*365, path:'/'});//record uid for ios active
     res.redirect(req.query.url);
 })

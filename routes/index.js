@@ -79,7 +79,7 @@ router.get('/iosactive', function(req, res, next){
 router.get('/iossacheck', function(req, res, next){
 
     var collection = db.collection('iosactive');
-    var doc = {appid:appid, idfa:idfa};
+    var doc = {appid:req.query.appid, idfa:req.query.idfa};
 
 
     collection.find(doc).limit(1).toArray(function(err, docs){
@@ -92,7 +92,7 @@ router.get('/iossacheck', function(req, res, next){
 
             }else{//no such record since iosactive request issue
 
-                res.send('no record');
+                res.status(444).end();
 
             }
 

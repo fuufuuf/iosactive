@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var mongo_api = require('../modules/mongo_api');
+var uuid = require('node-uuid');
+var ys_uuid = require('../modules/yushan_util');
 var db;
 mongo_api.db_conn(function(getDB){//for pv
 
@@ -105,10 +107,31 @@ router.get('/iossacheck', function(req, res, next){
 
 router.get('/download', function(req, res, next) {
 
-    console.log(req.query.ys_uuid);
 
-    res.cookie('ys_uuid', req.query.ys_uuid, { maxAge: 600000*6*24*365, path:'/'});//record uid for ios active
-    res.redirect(req.query.url);
+    if(req.cookie.ys_uuid&&req.query.ys_uuid){//existing user, new req from yushan framework. No need to write ys_user bcz yushan framework already did.
+
+        res.redirect(req.query.url);
+
+    }else if(!req.cookie.ys_uuid&&req.query.ys_uuid) {//new user, new req from yushan framework. No need to write ys_user bcz yushan framework already did.
+        res.cookie('ys_uuid', req.query.ys_uuid, {maxAge: 600000 * 6 * 24 * 365, path: '/'});//record uid for ios active
+        res.redirect(req.query.url);
+    }else if(!req.cookie.ys_uuid&&!req.query.ys_uuid){//new user, new req from other channel
+        var ys_uuid = uuid.v4();
+        var doc = {};
+        doc.sip = req.ips[0];
+        doc.app_id = req.query.app_id;//short link binding
+        doc.c2 = req.query.c2;//short link binding
+        doc.dlflag = 1;
+        doc.device = ys_uuid.get_mobile_type(req.headers['user-agent']);
+
+        var collection = db.collection('yushan_user');
+        collection.insertOne({ys_uuid:ys_uuid, all_info:[doc], qt:0}, function(err, data){//create
+            res.cookie('ys_uuid', ys_uuid, {maxAge: 600000 * 6 * 24 * 365, path: '/'});//record uid for ios active
+            res.redirect(req.query.url);
+
+        })
+        
+    }
 })
 
 router.get('/geth', function(req, res, next){

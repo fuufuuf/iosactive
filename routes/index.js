@@ -130,7 +130,7 @@ router.get('/download', function(req, res, next) {
             res.redirect(req.query.url);
 
         })
-        
+
     }
 })
 

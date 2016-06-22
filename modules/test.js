@@ -1,7 +1,5 @@
-var k = [{abc:'qqq'},1];
-console.log(k.shift().abc);
+var s = {a:''};
 
-for(i in k){
+var ys_uuid = require('../modules/yushan_util');
 
-    console.log(k[i]);
-};
+console.log(Object.keys(s).contains('b'));

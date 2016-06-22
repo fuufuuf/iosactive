@@ -19,5 +19,14 @@ var get_mobile_type = function(u){
 
 }
 
+Array.prototype.contains=function(obj) {
+    var index=this.length;
+    while (index--){
+        if(this[index]===obj){
+            return true;
+        }
+    }
+    return false;
+}
 
 exports.get_mobile_type = get_mobile_type;

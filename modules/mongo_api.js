@@ -4,7 +4,7 @@ var util = require('util');
 var settings = require('../settings');
 var pv_monitor = require('./pv_issue_monitor');
 var async = require('async');
-
+var ObjectID = require('mongodb').ObjectID;
 //new connection to ali mongo db
 
 
@@ -16,6 +16,13 @@ var async = require('async');
 
 
 // Use connect method to connect to the Server
+
+
+var get_objID = function(objid){
+
+
+    return new ObjectID(objid);
+}
 
 var db_conn = function(callback){
 
@@ -249,3 +256,4 @@ exports.findMany = findMany;
 exports.insertDocuments = insertDocuments;
 exports.db_conn = db_conn;
 exports.inner_conn_instance = inner_conn_instance;
+exports.get_objID = get_objID;

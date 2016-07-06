@@ -15,88 +15,20 @@ router.get('/iosactive', function(req, res, next){
 
     req.query.active_date = new Date();
 
-    if(req.query.active_type=='strong') {
-
-
-        console.log(req.cookies);
-
+    if(req.query.active_type=='strong'&&req.cookies.ys_uuid) {
 
         req.query.ys_uuid = req.cookies.ys_uuid;
 
-        mongo_api.insertDocuments(db, 'iosactive', req.query, function (err, r) {
+        ios_doc({ys_uuid:req.query.ys_uuid}, req);
 
-            if (err) {
-
-                res.send('not saved due to ' + err);
-            } else {
-
-                console.log(req.query);
-                console.log('succeeded');
-
-                res.send('succeeded');
-            }
-
-        })
-    }else if(req.query.active_type=='weak'){
+    }else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
 
         var appid = req.query.appid;
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
+        ios_doc(doc, req);
 
-
-        var collection = db.collection('yushan_user');
-        collection.find(doc).toArray(function(err, docs){
-                if(docs.length==0){
-
-                    console.log('no matching device');
-                    console.log(doc);
-                    res.status(443).end();
-
-                }else{
-                    //console.log(docs);
-                    var alt_ys_uuid = [];
-                    var tmp = docs[0];
-                    req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
-                    for(var item in docs){
-                        alt_ys_uuid.push(item.ys_uuid);
-                    }
-
-                    req.query.alt_ys_uuid = alt_ys_uuid;//save other matched ys_uuid
-                    var co_ios = db.collection('iosactive');
-
-
-                    co_ios.find({ys_uuid:req.query.ys_uuid, appid:appid}).limit(1).next(function(err, doc){
-
-                        if(doc){//second active
-
-                           // console.log({_id:mongo_api.get_objID(doc._id)});
-
-                            co_ios.findOneAndUpdate({_id:mongo_api.get_objID(doc._id)}, {$set:{re_active:true}}, function(err, data){
-
-                                req.query.re_active = tmp.re_active = true;
-                                res.json(tmp);
-                            })
-
-                        }else{//first active
-
-                            req.query.re_active=tmp.re_active = false;
-
-                            co_ios.insertOne(req.query, function(err, data){
-                                if(err){
-                                    console.log(err);
-                                }
-                                res.json(tmp)
-                            })
-
-                        }
-
-
-                    })
-
-                }
-
-            })
 
         }else{
 
@@ -166,6 +98,80 @@ router.get('/download', function(req, res, next) {
 
     }
 })
+
+var ios_doc = function(doc, req){
+    var collection = db.collection('yushan_user');
+    collection.find(doc).toArray(function(err, docs){
+        if(docs.length==0){
+
+            console.log('no matching device');
+            console.log(doc);
+            res.status(443).end();
+
+        }else{
+            //console.log(docs);
+            var alt_ys_uuid = [];
+            var tmp = docs[0];
+
+            req.query.details = tmp.all_info[tmp.qt];//retrieve the last one
+
+            req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
+            for(var item in docs){//list all alternative ys_uuid
+                alt_ys_uuid.push(item.ys_uuid);
+            }
+
+            req.query.alt_ys_uuid = alt_ys_uuid;//save other matched ys_uuid
+            var co_ios = db.collection('iosactive');
+
+            co_ios.insertOne(req.query, function(err, data){
+                if(err){
+                    console.log(err);
+                }
+                res.json(req.query);
+            })
+            /*
+             *
+             * re-active not in use
+             * */
+
+
+            //co_ios.find({ys_uuid:req.query.ys_uuid, appid:appid}).limit(1).next(function(err, doc){
+            //
+            //    if(doc){//second active
+            //
+            //       // console.log({_id:mongo_api.get_objID(doc._id)});
+            //
+            //        co_ios.findOneAndUpdate({_id:mongo_api.get_objID(doc._id)}, {$set:{re_active:true}}, function(err, data){
+            //
+            //            req.query.re_active = tmp.re_active = true;
+            //            res.json(tmp);
+            //        })
+            //
+            //    }else{//first active
+            //
+            //        req.query.re_active=tmp.re_active = false;
+            //
+            //        co_ios.insertOne(req.query, function(err, data){
+            //            if(err){
+            //                console.log(err);
+            //            }
+            //            res.json(tmp)
+            //        })
+            //
+            //    }
+            //
+            //
+            //})
+
+        }
+
+    })
+
+
+
+
+
+}
 
 
 module.exports = router;

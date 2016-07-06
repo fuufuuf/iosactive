@@ -44,6 +44,8 @@ router.get('/iosactive', function(req, res, next){
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
 
+        console.log(req);
+
         console.log(doc);
         var collection = db.collection('yushan_user');
         collection.find(doc).toArray(function(err, docs){
@@ -136,7 +138,7 @@ router.get('/iossacheck', function(req, res, next){
 
 router.get('/download', function(req, res, next) {
 
-    console.log(req.cookies);
+    //console.log(req.cookies);
 
 
     if(req.cookies.ys_uuid&&req.query.ys_uuid){//existing user, new req from yushan framework. No need to write ys_user bcz yushan framework already did.

@@ -43,10 +43,13 @@ router.get('/iosactive', function(req, res, next){
         var ip = Object.keys(req.query).contains('ip')? req.query.ip:req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
-        //console.log(doc);
+
+        console.log(doc);
         var collection = db.collection('yushan_user');
         collection.find(doc).toArray(function(err, docs){
                 if(docs.length==0){
+
+                    console.log('no matching device');
                     res.json({status:0});
                 }else{
                     //console.log(docs);

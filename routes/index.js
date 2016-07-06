@@ -44,8 +44,6 @@ router.get('/iosactive', function(req, res, next){
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
 
-        console.log(req);
-
         console.log(doc);
         var collection = db.collection('yushan_user');
         collection.find(doc).toArray(function(err, docs){

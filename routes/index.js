@@ -18,6 +18,9 @@ router.get('/iosactive', function(req, res, next){
     if(req.query.active_type=='strong') {
 
 
+        console.log(req.cookies);
+
+
         req.query.ys_uuid = req.cookies.ys_uuid;
 
         mongo_api.insertDocuments(db, 'iosactive', req.query, function (err, r) {

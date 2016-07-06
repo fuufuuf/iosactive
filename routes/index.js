@@ -17,9 +17,11 @@ router.get('/iosactive', function(req, res, next){
 
     if(req.query.active_type=='strong'&&req.cookies.ys_uuid) {
 
+        console.log('strong');
+
         req.query.ys_uuid = req.cookies.ys_uuid;
 
-        ios_doc({ys_uuid:req.query.ys_uuid}, req);
+        ios_doc({ys_uuid:req.query.ys_uuid}, req, res);//data -> iosactive
 
     }else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
 
@@ -27,7 +29,7 @@ router.get('/iosactive', function(req, res, next){
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
-        ios_doc(doc, req);
+        ios_doc(doc, req, res);//data -> iosactive
 
 
         }else{
@@ -99,7 +101,7 @@ router.get('/download', function(req, res, next) {
     }
 })
 
-var ios_doc = function(doc, req){
+var ios_doc = function(doc, req, res){
     var collection = db.collection('yushan_user');
     collection.find(doc).toArray(function(err, docs){
         if(docs.length==0){

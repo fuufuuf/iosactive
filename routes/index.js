@@ -44,13 +44,15 @@ router.get('/iosactive', function(req, res, next){
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
 
-        console.log(doc);
+
         var collection = db.collection('yushan_user');
         collection.find(doc).toArray(function(err, docs){
                 if(docs.length==0){
 
                     console.log('no matching device');
-                    res.json({status:0});
+                    console.log(doc);
+                    res.status(443).end();
+
                 }else{
                     //console.log(docs);
                     var alt_ys_uuid = [];
@@ -165,12 +167,5 @@ router.get('/download', function(req, res, next) {
     }
 })
 
-router.get('/geth', function(req, res, next){
-
-    console.log(req);
-    res.end('66666');
-
-
-})
 
 module.exports = router;

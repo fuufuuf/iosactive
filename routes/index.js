@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongo_api = require('../modules/mongo_api');
 var uuid = require('node-uuid');
-var ys_uuid = require('../modules/yushan_util');
+var ys_util = require('../modules/yushan_util');
 
 var db;
 mongo_api.db_conn(function(getDB){//for pv
@@ -101,7 +101,7 @@ router.get('/download', function(req, res, next) {
         doc.app_id = req.query.app_id;//short link binding
         doc.c2 = req.query.c2;//short link binding
         doc.dlflag = 1;
-        doc.device = ys_uuid.get_mobile_type(req.headers['user-agent']);
+        doc.device = ys_util.get_mobile_type(req.headers['user-agent']);
 
         var collection = db.collection('yushan_user');
         collection.insertOne({ys_uuid:ys_uuid, all_info:[doc], qt:0}, function(err, data){//create yushan_user

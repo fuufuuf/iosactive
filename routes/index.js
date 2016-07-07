@@ -21,7 +21,7 @@ router.get('/iosactive', function(req, res, next){
 
         req.query.ys_uuid = req.cookies.ys_uuid;
 
-        ios_doc({ys_uuid:req.query.ys_uuid}, req, res);//data -> iosactive
+        set_details({ys_uuid:req.query.ys_uuid}, req, res);//data -> iosactive
 
     }else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
 
@@ -29,7 +29,7 @@ router.get('/iosactive', function(req, res, next){
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
-        ios_doc(doc, req, res);//data -> iosactive
+        set_details(doc, req, res);//data -> iosactive
 
 
         }else{
@@ -72,17 +72,22 @@ router.get('/iossacheck', function(req, res, next){
 
 router.get('/download', function(req, res, next) {
 
-    //console.log(req.cookies);
+    console.log(req.cookies);
 
 
     if(req.cookies.ys_uuid&&req.query.ys_uuid){//existing user, new req from yushan framework. No need to write ys_user bcz yushan framework already did.
 
+        console.log('existing yushan user');
+
         res.redirect(req.query.url);
 
     }else if(!req.cookies.ys_uuid&&req.query.ys_uuid) {//new user, new req from yushan framework. No need to write ys_user bcz yushan framework already did.
+        console.log('new user from yushan framework');
+
         res.cookie('ys_uuid', req.query.ys_uuid, {maxAge: 600000 * 6 * 24 * 365, path: '/'});//record uid for ios active
         res.redirect(req.query.url);
     }else if(!req.cookies.ys_uuid&&!req.query.ys_uuid){//new user, new req from other channel
+        console.log('new user from other channel');
         var ys_uuid = uuid.v4();
         var doc = {};
         doc.sip = req.ips[0];
@@ -101,7 +106,7 @@ router.get('/download', function(req, res, next) {
     }
 })
 
-var ios_doc = function(doc, req, res){
+var set_details = function(doc, req, res){
     var collection = db.collection('yushan_user');
     collection.find(doc).toArray(function(err, docs){
         if(docs.length==0){

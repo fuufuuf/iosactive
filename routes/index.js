@@ -72,7 +72,7 @@ router.get('/iossacheck', function(req, res, next){
 
 router.get('/download', function(req, res, next) {
 
-    console.log(req.cookies);
+    console.log('download cookies'+req.cookies);
 
 
     if(req.cookies.ys_uuid&&req.query.ys_uuid){//existing user, new req from yushan framework. No need to write ys_user bcz yushan framework already did.
@@ -129,6 +129,9 @@ var set_details = function(doc, req, res){
 
             req.query.alt_ys_uuid = alt_ys_uuid;//save other matched ys_uuid
             var co_ios = db.collection('iosactive');
+
+
+            console.log('ios active info'+req.query);
 
             co_ios.insertOne(req.query, function(err, data){
                 if(err){

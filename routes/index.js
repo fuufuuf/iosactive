@@ -14,6 +14,9 @@ router.get('/iosactive', function(req, res, next){
 
 
     req.query.active_date = new Date();
+    req.query.channel = req.cookies.channel;
+    req.query.dl_date = req.cookies.dl_date;
+
 
     if(req.query.active_type=='strong'&&req.cookies.ys_uuid) {
 
@@ -72,7 +75,11 @@ router.get('/iossacheck', function(req, res, next){
 
 router.get('/download', function(req, res, next) {
 
-    console.log('download cookies'+req.cookies);
+    console.log(req.cookies);
+
+    res.cookie('channel', req.query.channel||'unknown', {maxAge: 600000 * 6 * 24 * 365, path: '/'});//set cookies to record channel
+    res.cookie('dl_date', new Date(), {maxAge: 600000 * 6 * 24 * 365, path: '/'});//set cookies to record channel
+
 
 
     if(req.cookies.ys_uuid&&req.query.ys_uuid){//existing user, new req from yushan framework. No need to write ys_user bcz yushan framework already did.
@@ -97,7 +104,7 @@ router.get('/download', function(req, res, next) {
         doc.device = ys_uuid.get_mobile_type(req.headers['user-agent']);
 
         var collection = db.collection('yushan_user');
-        collection.insertOne({ys_uuid:ys_uuid, all_info:[doc], qt:0}, function(err, data){//create
+        collection.insertOne({ys_uuid:ys_uuid, all_info:[doc], qt:0}, function(err, data){//create yushan_user
             res.cookie('ys_uuid', ys_uuid, {maxAge: 600000 * 6 * 24 * 365, path: '/'});//record uid for ios active
             res.redirect(req.query.url);
 
@@ -131,7 +138,8 @@ var set_details = function(doc, req, res){
             var co_ios = db.collection('iosactive');
 
 
-            console.log('ios active info'+req.query);
+            //console.log('ios active info');
+            //console.log(req.query);
 
             co_ios.insertOne(req.query, function(err, data){
                 if(err){

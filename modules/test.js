@@ -1,5 +1,3 @@
-var s = {a:''};
+var a = 'sdf233ssss';
 
-var ys_uuid = require('../modules/yushan_util');
-
-console.log(Object.keys(s).contains('b'));
+console.log(a.match(/^aaa/))

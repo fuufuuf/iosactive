@@ -110,6 +110,10 @@ router.get('/download', function(req, res, next) {
 
         })
 
+    }else if(req.cookies.ys_uuid&&!req.query.ys_uuid){//existing yushan user, but req from other channel. The same as existing yushan user
+
+        console.log('existing yushan user, but req from other channel');
+
     }
 })
 

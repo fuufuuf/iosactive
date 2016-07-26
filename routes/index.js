@@ -17,16 +17,22 @@ router.get('/iosactive', function(req, res, next){
     req.query.channel = req.cookies.channel;
     req.query.dl_date = req.cookies.dl_date;
 
+    console.log('active cookie');
+    console.log(req.cookies);
+
 
     if(req.query.active_type=='strong'&&req.cookies.ys_uuid) {
 
-        console.log('strong');
+        console.log('strong!');
 
         req.query.ys_uuid = req.cookies.ys_uuid;
 
         set_details({ys_uuid:req.query.ys_uuid}, req, res);//data -> iosactive
 
     }else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
+
+
+        console.log('weak!');
 
         var appid = req.query.appid;
         var ip = req.ips[0];//ip address can be from app or client itself
@@ -75,7 +81,7 @@ router.get('/iossacheck', function(req, res, next){
 
 router.get('/download', function(req, res, next) {
 
-    console.log(req.cookies);
+    //console.log(req.cookies);
 
     res.cookie('channel', req.query.channel||'unknown', {maxAge: 600000 * 6 * 24 * 365, path: '/'});//set cookies to record channel
     res.cookie('dl_date', new Date(), {maxAge: 600000 * 6 * 24 * 365, path: '/'});//set cookies to record channel

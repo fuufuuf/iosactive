@@ -109,6 +109,7 @@ router.get('/download', function(req, res, next) {
         doc.dlflag = 1;
         doc.device = ys_util.get_mobile_type(req.headers['user-agent']);
         doc.channel = req.query.channel||'unknown';
+        doc.dl_date = new Date();//record download time
 
         var collection = db.collection('yushan_user');
         collection.insertOne({ys_uuid:ys_uuid, all_info:[doc], qt:0}, function(err, data){//create yushan_user
@@ -127,6 +128,8 @@ router.get('/download', function(req, res, next) {
         doc.dlflag = 1;
         doc.device = ys_util.get_mobile_type(req.headers['user-agent']);
         doc.channel = req.query.channel||'unknown';
+        doc.dl_date = new Date();//record download time
+
 
         mongo_api.updateD(db, 'yushan_user', {ys_uuid:req.cookies.ys_uuid}, {$inc:{qt:1}, $push:{all_info: doc}}, function(err, data){
 
@@ -159,6 +162,8 @@ var set_details = function(doc, req, res){
 
             req.query.details = tmp.all_info[tmp.qt];//retrieve last all_info
             req.query.channel = req.query.channel||req.query.details.channel;//make sure channel is available...
+            req.query.dl_date = req.query.dl_date||req.query.details.dl_date;//make sure dl_date is available...
+
 
             req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
             for(var item in docs){//list all alternative ys_uuid

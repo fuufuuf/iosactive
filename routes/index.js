@@ -108,6 +108,7 @@ router.get('/download', function(req, res, next) {
         doc.c2 = req.query.c2;//short link binding
         doc.dlflag = 1;
         doc.device = ys_util.get_mobile_type(req.headers['user-agent']);
+        doc.channel = req.query.channel||'unknown';
 
         var collection = db.collection('yushan_user');
         collection.insertOne({ys_uuid:ys_uuid, all_info:[doc], qt:0}, function(err, data){//create yushan_user
@@ -116,10 +117,27 @@ router.get('/download', function(req, res, next) {
 
         })
 
-    }else if(req.cookies.ys_uuid&&!req.query.ys_uuid){//existing yushan user, but req from other channel. The same as existing yushan user
+    }else if(req.cookies.ys_uuid&&!req.query.ys_uuid){//existing yushan user, but req from other channel. Need to update ys_user info
 
         console.log('existing yushan user, but req from other channel');
-        res.redirect(req.query.url);
+
+        var doc = {}
+        doc.app_id = req.query.app_id;//short link binding
+        doc.c2 = req.query.c2;//short link binding
+        doc.dlflag = 1;
+        doc.device = ys_util.get_mobile_type(req.headers['user-agent']);
+        doc.channel = req.query.channel||'unknown';
+
+        mongo_api.updateD(db, 'yushan_user', {ys_uuid:req.cookies.ys_uuid}, {$inc:{qt:1}, $push:{all_info: doc}}, function(err, data){
+
+            if(err){
+
+                console.log('illegal ys_uuid cookie');
+            }
+            res.redirect(req.query.url);
+
+        })
+
 
 
     }
@@ -139,7 +157,8 @@ var set_details = function(doc, req, res){
             var alt_ys_uuid = [];
             var tmp = docs[0];
 
-            req.query.details = tmp.all_info[tmp.qt];//retrieve the last one
+            req.query.details = tmp.all_info[tmp.qt];//retrieve last all_info
+            req.query.channel = req.query.channel||req.query.details.channel;//make sure channel is available...
 
             req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
             for(var item in docs){//list all alternative ys_uuid

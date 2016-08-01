@@ -124,6 +124,7 @@ router.get('/download', function(req, res, next) {
 
         var doc = {}
         doc.app_id = req.query.app_id;//short link binding
+        doc.sip = req.ips[0];
         doc.c2 = req.query.c2;//short link binding
         doc.dlflag = 1;
         doc.device = ys_util.get_mobile_type(req.headers['user-agent']);

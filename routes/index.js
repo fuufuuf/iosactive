@@ -29,8 +29,8 @@ router.get('/iosactive', function(req, res, next){
 
     } else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
 
-        console.log('weak!');
         var appid = req.query.appid;
+        req.query.active_type = 'strong|weak';
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};

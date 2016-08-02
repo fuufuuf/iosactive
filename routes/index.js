@@ -24,23 +24,18 @@ router.get('/iosactive', function(req, res, next){
     if(req.query.active_type=='strong'&&req.cookies.ys_uuid) {
 
         console.log('strong!');
-
         req.query.ys_uuid = req.cookies.ys_uuid;
+        set_details({ys_uuid:req.query.ys_uuid, 'all_info.app_id':req.query.appid}, req, res);//data -> iosactive
 
-        set_details({ys_uuid:req.query.ys_uuid}, req, res);//data -> iosactive
-
-    }else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
-
+    } else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
 
         console.log('weak!');
-
         var appid = req.query.appid;
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
         set_details(doc, req, res);//data -> iosactive
-
-
+        
         }else{
 
         res.cookie('ys_uuid', req.query.k, { maxAge: 600000*6*24*365, path:'/'});//record uid for ios active

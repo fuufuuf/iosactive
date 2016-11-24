@@ -102,6 +102,7 @@ router.get('/download', function(req, res, next) {
         console.log('new user from yushan framework');
 
         res.cookie('ys_uuid', req.query.ys_uuid, {maxAge: 600000 * 6 * 24 * 365, path: '/'});//record uid for ios active
+        console.log(req.query.ys_uuid);
         res.redirect(req.query.url);
     }else if(!req.cookies.ys_uuid&&!req.query.ys_uuid){//new user, new req from other channel
         console.log('new user from other channel');

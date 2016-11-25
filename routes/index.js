@@ -10,6 +10,12 @@ mongo_api.db_conn(function(getDB){//for pv
     db = getDB;
 });
 
+router.get('/test', function(req, res, next){
+
+    console.log(req.ips);
+
+})
+
 router.get('/iosactive', function(req, res, next){
 
 
@@ -39,7 +45,6 @@ router.get('/iosactive', function(req, res, next){
         }
 
         var appid = req.query.appid;
-
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};

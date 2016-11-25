@@ -12,7 +12,11 @@ mongo_api.db_conn(function(getDB){//for pv
 
 router.get('/test', function(req, res, next){
 
+    console.log('***********************');
     console.log(req.ips);
+    console.log('***********************');
+
+    res.end();
 
 })
 

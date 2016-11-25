@@ -51,7 +51,6 @@ router.get('/iosactive', function(req, res, next){
         var appid = req.query.appid;
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
-        console.log(doc_inner);
         var doc = {'all_info':{$elemMatch:doc_inner}};
         set_details(doc, ip, req, res);//data -> iosactive
         
@@ -183,7 +182,7 @@ var set_details = function(doc, device_ip, req, res){
 
             req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
             for(var item in docs){//list all alternative ys_uuid
-                alt_ys_uuid.push(item.ys_uuid);
+                alt_ys_uuid.push(docs[item].ys_uuid);
             }
 
             req.query.alt_ys_uuid = alt_ys_uuid;//save other matched ys_uuid

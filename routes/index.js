@@ -171,18 +171,13 @@ var set_details = function(doc, device_ip, req, res){
             res.status(443).end();
 
         }else{
-            //console.log(docs);
             var alt_ys_uuid = [];
             var tmp = docs[0];
-
             req.query.details = tmp.all_info[tmp.qt];//retrieve last all_info
-            req.query.channel = req.query.channel||req.query.details.channel;//make sure channel is available...
-            req.query.dl_date = req.query.dl_date||req.query.details.dl_date;//make sure dl_date is available...
             req.query.device_ip = device_ip;
-
-            req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
+            req.query.ys_uuid=docs.shift()['ys_uuid'];//make first match as ys_uuid
             for(var item in docs){//list all alternative ys_uuid
-                alt_ys_uuid.push(docs[item].ys_uuid);
+                alt_ys_uuid.push(docs[item]['ys_uuid']);
             }
 
             req.query.alt_ys_uuid = alt_ys_uuid;//save other matched ys_uuid

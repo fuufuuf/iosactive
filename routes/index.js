@@ -51,8 +51,9 @@ router.get('/iosactive', function(req, res, next){
         var appid = req.query.appid;
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
+        console.log(doc_inner);
         var doc = {'all_info':{$elemMatch:doc_inner}};
-        set_details(doc, req, res);//data -> iosactive
+        set_details(doc, ip, req, res);//data -> iosactive
         
         }else{
 
@@ -161,7 +162,7 @@ router.get('/download', function(req, res, next) {
     }
 })
 
-var set_details = function(doc, req, res){
+var set_details = function(doc, device_ip, req, res){
     var collection = db.collection('yushan_user');
     collection.find(doc).toArray(function(err, docs){
         if(docs.length==0){
@@ -178,7 +179,7 @@ var set_details = function(doc, req, res){
             req.query.details = tmp.all_info[tmp.qt];//retrieve last all_info
             req.query.channel = req.query.channel||req.query.details.channel;//make sure channel is available...
             req.query.dl_date = req.query.dl_date||req.query.details.dl_date;//make sure dl_date is available...
-
+            req.query.device_ip = device_ip;
 
             req.query.ys_uuid=docs.shift().ys_uuid;//make first match as ys_uuid
             for(var item in docs){//list all alternative ys_uuid

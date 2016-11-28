@@ -54,7 +54,7 @@ router.get('/iosactive', function(req, res, next){
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
-        set_details(doc, ip, req.query.appid, req, res);//data -> iosactive
+        set_details(doc, req.query.appid, ip, req, res);//data -> iosactive
         
         }else{
 

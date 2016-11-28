@@ -35,7 +35,9 @@ router.get('/iosactive', function(req, res, next){
 
         console.log('strong!');
         req.query.ys_uuid = req.cookies.ys_uuid;
-        set_details({ys_uuid:req.query.ys_uuid, 'all_info.app_id':req.query.appid}, req, res);//data -> iosactive
+        var ip = req.ips[0];//ip address can be from app or client itself
+
+        set_details({'ys_uuid':req.query.ys_uuid, 'all_info.app_id':req.query.appid}, req.query.appid, ip, req, res);//data -> iosactive
 
     } else if(req.query.active_type=='weak'||req.query.active_type=='strong'){
 
@@ -52,7 +54,7 @@ router.get('/iosactive', function(req, res, next){
         var ip = req.ips[0];//ip address can be from app or client itself
         var doc_inner = {'app_id':appid, 'sip':ip||null};//*app_id* and *ip* as query parameter
         var doc = {'all_info':{$elemMatch:doc_inner}};
-        set_details(doc, ip, req, res);//data -> iosactive
+        set_details(doc, ip, req.query.appid, req, res);//data -> iosactive
         
         }else{
 
@@ -161,9 +163,9 @@ router.get('/download', function(req, res, next) {
     }
 })
 
-var set_details = function(doc, device_ip, req, res){
+var set_details = function(doc, app_id, device_ip, req, res){
     var collection = db.collection('yushan_user');
-    collection.find(doc).toArray(function(err, docs){
+    collection.find(doc).sort({_id:-1}).toArray(function(err, docs){
         if(docs.length==0){
 
             console.log('no matching device');
@@ -173,7 +175,13 @@ var set_details = function(doc, device_ip, req, res){
         }else{
             var alt_ys_uuid = [];
             var tmp = docs[0];
-            req.query.details = tmp.all_info[tmp.qt];//retrieve last all_info
+            tmp.all_info.forEach(function(item){
+
+                if(item['app_id']==app_id){
+                    req.query.details = item;
+                }
+            })
+            //req.query.details = tmp.all_info[tmp.qt];//retrieve last all_info
             req.query.device_ip = device_ip;
             req.query.ys_uuid=docs.shift()['ys_uuid'];//make first match as ys_uuid
             for(var item in docs){//list all alternative ys_uuid
